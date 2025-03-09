@@ -1,3 +1,7 @@
+> 🚨 NOTICE: There is no time for maintance and so, this project will be archived and no longer receive updates. Thank you everyone who has been a part of this ❤️
+
+---
+
 # Baileys API
 
 Baileys is a simple, fast and easy to use WhatsApp Web API written in TypeScript. It is designed to be simple to use and is optimized for usage in Node.js.
