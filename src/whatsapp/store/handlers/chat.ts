@@ -37,12 +37,17 @@ export default function chatHandler(sessionId: string, event: BaileysEventEmitte
 			});
 		} catch (e) {
 			logger.error(e, "An error occured during chats set");
+
+			let message = `Unknown error during during chats set`;
+
+			if (e instanceof Error) message = `An error occured during chats set: ${e.message}`;
+
 			emitEvent(
 				"chats.set",
 				sessionId,
 				undefined,
 				"error",
-				`An error occured during chats set: ${e.message}`,
+				message,
 			);
 		}
 	};
@@ -66,62 +71,72 @@ export default function chatHandler(sessionId: string, event: BaileysEventEmitte
 			emitEvent("chats.upsert", sessionId, { chats: results });
 		} catch (e) {
 			logger.error(e, "An error occured during chats upsert");
+
+			let message = `Unknown error during during chats upsert`;
+
+			if (e instanceof Error) message = `An error occured during chats upsert: ${e.message}`;
+
 			emitEvent(
 				"chats.upsert",
 				sessionId,
 				undefined,
 				"error",
-				`An error occured during chats upsert: ${e.message}`,
+				message,
 			);
 		}
 	};
 
 	const update: BaileysEventHandler<"chats.update"> = async (updates) => {
-      for (const update of updates) {
-         try {
-            const data = transformPrisma(update) as MakeTransformedPrisma<Chat>;
-            // Cek apakah chat sudah ada sebelum mencoba mengupdate note: terkadang chat tidak seluruhnya tercatat di database @todo: cek ulang?
-            const existingChat = await model.findUnique({
-               where: { sessionId_id: { id: update.id!, sessionId } },
-            });
-   
-            if (!existingChat) {
-               logger.info({ update }, "Chat not found, skipping update");
-               continue; 
-            }
-   
-            await model.update({
-               select: { pkId: true },
-               data: {
-                  ...data,
-                  unreadCount:
-                     typeof data.unreadCount === "number"
-                        ? data.unreadCount > 0
-                           ? { increment: data.unreadCount }
-                           : { set: data.unreadCount }
-                        : undefined,
-               },
-               where: { sessionId_id: { id: update.id!, sessionId } },
-            });
-            emitEvent("chats.update", sessionId, { chats: data });
-         } catch (e) {
-            if (e instanceof PrismaClientKnownRequestError && e.code === "P2025") {
-               return logger.info({ update }, "Got update for non existent chat");
-            }
-   
-            // Emit event error
-            emitEvent(
-               "chats.update",
-               sessionId,
-               undefined,
-               "error",
-               `An error occurred during chat update: ${e.message}`,
-            );
-            logger.error(e, "An error occurred during chat update");
-         }
-      }
-   };
-   
+		for (const update of updates) {
+			try {
+				const data = transformPrisma(update) as MakeTransformedPrisma<Chat>;
+				// Cek apakah chat sudah ada sebelum mencoba mengupdate note: terkadang chat tidak seluruhnya tercatat di database @todo: cek ulang?
+				const existingChat = await model.findUnique({
+					where: { sessionId_id: { id: update.id!, sessionId } },
+				});
+
+				if (!existingChat) {
+					logger.info({ update }, "Chat not found, skipping update");
+					continue;
+				}
+
+				await model.update({
+					select: { pkId: true },
+					data: {
+						...data,
+						unreadCount:
+							typeof data.unreadCount === "number"
+								? data.unreadCount > 0
+									? { increment: data.unreadCount }
+									: { set: data.unreadCount }
+								: undefined,
+					},
+					where: { sessionId_id: { id: update.id!, sessionId } },
+				});
+				emitEvent("chats.update", sessionId, { chats: data });
+			} catch (e) {
+				if (e instanceof PrismaClientKnownRequestError && e.code === "P2025") {
+					return logger.info({ update }, "Got update for non existent chat");
+				}
+
+
+				let message = `Unknown error during during chats update`;
+
+				if (e instanceof Error) message = `An error occured during chats update: ${e.message}`;
+
+				// Emit event error
+				emitEvent(
+					"chats.update",
+					sessionId,
+					undefined,
+					"error",
+					message,
+				);
+				logger.error(e, "An error occurred during chat update");
+			}
+		}
+	};
+
 
 	const del: BaileysEventHandler<"chats.delete"> = async (ids) => {
 		try {
@@ -131,12 +146,17 @@ export default function chatHandler(sessionId: string, event: BaileysEventEmitte
 			emitEvent("chats.delete", sessionId, { chats: ids });
 		} catch (e) {
 			logger.error(e, "An error occured during chats delete");
+
+			let message = `Unknown error during during chats delete`;
+
+			if (e instanceof Error) message = `An error occured during chats delete: ${e.message}`;
+
 			emitEvent(
 				"chats.delete",
 				sessionId,
 				undefined,
 				"error",
-				`An error occured during chats delete: ${e.message}`,
+				message,
 			);
 		}
 	};

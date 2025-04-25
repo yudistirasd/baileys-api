@@ -37,12 +37,17 @@ export default function contactHandler(sessionId: string, event: BaileysEventEmi
 			emitEvent("contacts.set", sessionId, { contacts: processedContacts });
 		} catch (e) {
 			logger.error(e, "An error occured during contacts set");
+
+			let message = `Unknown error during during contacts set`;
+
+			if (e instanceof Error) message = `An error occured during contacts set: ${e.message}`;
+
 			emitEvent(
 				"contacts.set",
 				sessionId,
 				undefined,
 				"error",
-				`An error occured during contacts set: ${e.message}`,
+				message,
 			);
 		}
 	};
@@ -67,14 +72,19 @@ export default function contactHandler(sessionId: string, event: BaileysEventEmi
 				skipDuplicates: true, // Prevent duplicate inserts
 			});
 			emitEvent("contacts.upsert", sessionId, { contacts: processedContacts });
-		} catch (error) {
-			logger.error("An unexpected error occurred during contacts upsert", error);
+		} catch (e) {
+			logger.error("An unexpected error occurred during contacts upsert", e);
+
+			let message = `Unknown error during during contacts upsert`;
+
+			if (e instanceof Error) message = `An error occured during contacts upsert: ${e.message}`;
+
 			emitEvent(
 				"contacts.upsert",
 				sessionId,
 				undefined,
 				"error",
-				`An unexpected error occurred during contacts upsert: ${error.message}`,
+				message,
 			);
 		}
 	};
@@ -96,12 +106,17 @@ export default function contactHandler(sessionId: string, event: BaileysEventEmi
 					return logger.info({ update }, "Got update for non existent contact");
 				}
 				logger.error(e, "An error occured during contact update");
+
+				let message = `Unknown error during during contacts update`;
+
+				if (e instanceof Error) message = `An error occured during contacts update: ${e.message}`;
+
 				emitEvent(
 					"contacts.update",
 					sessionId,
 					undefined,
 					"error",
-					`An error occured during contact update: ${e.message}`,
+					message,
 				);
 			}
 		}

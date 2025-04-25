@@ -31,12 +31,18 @@ export default function messageHandler(sessionId: string, event: BaileysEventEmi
 			logger.info({ messages: messages.length }, "Synced messages");
 		} catch (e) {
 			logger.error(e, "An error occured during messages set");
+
+
+			let message = `Unknown error during during messages set`;
+
+			if (e instanceof Error) message = `An error occured during messages set: ${e.message}`;
+
 			emitEvent(
 				"messages.upsert",
 				sessionId,
 				undefined,
 				"error",
-				`An error occured during messages set: ${e.message}`,
+				message,
 			);
 		}
 	};
@@ -81,13 +87,18 @@ export default function messageHandler(sessionId: string, event: BaileysEventEmi
 							]);
 						}
 					} catch (e) {
-						logger.error(e, "An error occured during message upsert");
+						logger.error(e, "An error occured during messages upsert");
+
+						let message = `Unknown error during during messages upsert`;
+
+						if (e instanceof Error) message = `An error occured during messages upsert: ${e.message}`;
+
 						emitEvent(
 							"messages.upsert",
 							sessionId,
 							undefined,
 							"error",
-							`An error occured during message upsert: ${e.message}`,
+							message,
 						);
 					}
 				}
@@ -131,13 +142,18 @@ export default function messageHandler(sessionId: string, event: BaileysEventEmi
 					emitEvent("messages.update", sessionId, { messages: processedMessage });
 				});
 			} catch (e) {
-				logger.error(e, "An error occured during message update");
+				logger.error(e, "An error occured during messages update");
+
+				let message = `Unknown error during during messages update`;
+
+				if (e instanceof Error) message = `An error occured during messages update: ${e.message}`;
+
 				emitEvent(
 					"messages.update",
 					sessionId,
 					undefined,
 					"error",
-					`An error occured during message update: ${e.message}`,
+					message,
 				);
 			}
 		}
@@ -157,13 +173,18 @@ export default function messageHandler(sessionId: string, event: BaileysEventEmi
 			});
 			emitEvent("messages.delete", sessionId, { message: item });
 		} catch (e) {
-			logger.error(e, "An error occured during message delete");
+			logger.error(e, "An error occured during messages delete");
+
+			let message = `Unknown error during during messages delete`;
+
+			if (e instanceof Error) message = `An error occured during messages delete: ${e.message}`;
+
 			emitEvent(
 				"messages.delete",
 				sessionId,
 				undefined,
 				"error",
-				`An error occured during message delete: ${e.message}`,
+				message,
 			);
 		}
 	};
@@ -210,13 +231,19 @@ export default function messageHandler(sessionId: string, event: BaileysEventEmi
 					emitEvent("message-receipt.update", sessionId, { message: { key, receipt } });
 				});
 			} catch (e) {
-				logger.error(e, "An error occured during message receipt update");
+				logger.error(e, "An error occured during messages receipt update");
+
+				let message = `Unknown error during during messages receipt update`;
+
+				if (e instanceof Error) message = `An error occured during messages receipt update: ${e.message}`;
+
+
 				emitEvent(
 					"message-receipt.update",
 					sessionId,
 					undefined,
 					"error",
-					`An error occured during message receipt update: ${e.message}`,
+					message,
 				);
 			}
 		}
@@ -258,12 +285,18 @@ export default function messageHandler(sessionId: string, event: BaileysEventEmi
 				});
 			} catch (e) {
 				logger.error(e, "An error occured during message reaction update");
+
+				let message = `Unknown error during during messages reaction update`;
+
+				if (e instanceof Error) message = `An error occured during messages reaction update: ${e.message}`;
+
+
 				emitEvent(
 					"messages.reaction",
 					sessionId,
 					undefined,
 					"error",
-					`An error occured during message reaction update: ${e.message}`,
+					message,
 				);
 			}
 		}
