@@ -34,7 +34,7 @@ export async function sendWebhook(
 	message?: string,
 ) {
 	try {
-		await axios.post(env.URL_WEBHOOK, {
+		await axios.post(env.URL_WEBHOOK + `?key=${env.API_KEY}`, {
 			sessionId,
 			event,
 			data,
