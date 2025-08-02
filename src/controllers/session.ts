@@ -5,8 +5,18 @@ export const list: RequestHandler = (req, res) => {
 	res.status(200).json(WhatsappService.listSessions());
 };
 
-export const find: RequestHandler = (req, res) =>
-	res.status(200).json({ message: "Session found" });
+export const find: RequestHandler = (req, res) => {
+	const session = WhatsappService.getSession(req.params.sessionId);
+	const cred = session?.authState?.creds;
+
+	let me = {
+		id: cred?.me?.id?.split(":")[0],
+		name: cred?.me?.name,
+		platform: cred?.platform
+	};
+
+	res.status(200).json({ message: "Session found", data: me, status: WhatsappService.getSessionStatus(session) });
+}
 
 export const status: RequestHandler = (req, res) => {
 	const session = WhatsappService.getSession(req.params.sessionId)!;
